@@ -35,15 +35,18 @@ public class PrinceMakerService {
     public CreatePrince.Response createPrince(CreatePrince.Request request) {
         validateCreatePrinceRequest(request);
 
-        Prince prince = Prince.builder()
-                .princeLevel(request.getPrinceLevel())
-                .skillType(request.getSkillType())
-                .status(HEALTHY)
-                .experienceYears(request.getExperienceYears())
-                .princeId(request.getPrinceId())
-                .name(request.getName())
-                .age(request.getAge())
-                .build();
+        Prince prince = new Prince(
+                null,
+                request.getPrinceLevel(),
+                request.getSkillType(),
+                HEALTHY,
+                request.getExperienceYears(),
+                request.getPrinceId(),
+                request.getName(),
+                request.getAge(),
+                null,
+                null);
+
         princeRepository.save(prince);
         return CreatePrince.Response.fromEntity(prince);
     }
@@ -116,10 +119,13 @@ public class PrinceMakerService {
 
         prince.setStatus(StatusCode.WOUNDED);
 
-        WoundedPrince woundedPrince = WoundedPrince.builder()
-                .princeId(prince.getPrinceId())
-                .name(prince.getName())
-                .build();
+        WoundedPrince woundedPrince = new WoundedPrince(
+                prince.getId(),
+                prince.getPrinceId(),
+                prince.getName(),
+                null,
+                null
+                );
         woundedPrinceRepository.save(woundedPrince);
         return PrinceDetailDto.fromEntity(prince);
     }

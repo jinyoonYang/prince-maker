@@ -5,7 +5,6 @@ import com.makers.princemaker.entity.Prince
 import com.makers.princemaker.type.PrinceLevel
 import com.makers.princemaker.type.SkillType
 import com.makers.princemaker.util.getLocalDateTimeString
-import lombok.*
 
 /**
  * @author Snow

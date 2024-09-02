@@ -17,7 +17,11 @@ object DateTimeUtils {
 }*/
 
 //버전 2 (글로벌 함수 - top 레벨)
-fun getLocalDateTimeString(localDateTime: LocalDateTime): String {
+fun getLocalDateTimeString(localDateTime: LocalDateTime?): String {
+    if(null == localDateTime) {
+        return ""
+    }
+
     return localDateTime.format(
         DateTimeFormatter
             .ofPattern("yyyy-MM-dd 탄생")
