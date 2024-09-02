@@ -44,12 +44,12 @@ class PrinceMakerService (
             null
         )
 
-        princeRepository!!.save(prince)
+        princeRepository.save(prince)
         return CreatePrince.Response.fromEntity(prince)
     }
 
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
-        princeRepository!!.findByPrinceId(request.princeId)
+        princeRepository.findByPrinceId(request.princeId)
             .ifPresent { prince: Prince? ->
                 throw PrinceMakerException(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID)
             }
@@ -76,13 +76,13 @@ class PrinceMakerService (
 
     @get:Transactional
     val allPrince: List<PrinceDto>
-        get() = princeRepository!!.findByStatusEquals(StatusCode.HEALTHY)
+        get() = princeRepository.findByStatusEquals(StatusCode.HEALTHY)
             .stream().map { prince: Prince? -> PrinceDto.fromEntity(prince) }
             .collect(Collectors.toList())
 
     @Transactional
     fun getPrince(princeId: String?): PrinceDetailDto {
-        return princeRepository!!.findByPrinceId(princeId)
+        return princeRepository.findByPrinceId(princeId)
             .map { obj: Prince? -> PrinceDetailDto.fromEntity(obj) }
             .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
     }
@@ -91,7 +91,7 @@ class PrinceMakerService (
     fun editPrince(
         princeId: String?, request: EditPrince.Request
     ): PrinceDetailDto {
-        val prince = princeRepository!!.findByPrinceId(princeId)
+        val prince = princeRepository.findByPrinceId(princeId)
             .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
         prince.princeLevel = request.princeLevel
         prince.skillType = request.skillType
@@ -106,7 +106,7 @@ class PrinceMakerService (
     fun woundPrince(
         princeId: String?
     ): PrinceDetailDto {
-        val prince = princeRepository!!.findByPrinceId(princeId)
+        val prince = princeRepository.findByPrinceId(princeId)
             .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
 
         prince.status = StatusCode.WOUNDED
@@ -118,7 +118,7 @@ class PrinceMakerService (
             null,
             null
         )
-        woundedPrinceRepository!!.save(woundedPrince)
+        woundedPrinceRepository.save(woundedPrince)
         return PrinceDetailDto.fromEntity(prince)
     }
 }
