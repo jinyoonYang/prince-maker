@@ -21,7 +21,11 @@ data class PrinceDetailDto (
 ){
     companion object {
         @JvmStatic
-        fun fromEntity(prince: Prince): PrinceDetailDto {
+        fun fromEntity(prince: Prince?): PrinceDetailDto {
+            if(null == prince){
+                return PrinceDetailDto()
+            }
+
             return PrinceDetailDto(
                 princeLevel = prince.princeLevel,
                 skillType = prince.skillType,
