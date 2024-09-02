@@ -50,16 +50,16 @@ class PrinceMakerControllerTest {
     @Test
     void getAllPrince() throws Exception {
         //given
-        PrinceDto warriorKing = PrinceDto.builder()
-                .skillType(SkillType.WARRIOR)
-                .princeLevel(PrinceLevel.KING)
-                .princeId("princeId")
-                .build();
-        PrinceDto intellectualJuniorPrince = PrinceDto.builder()
-                .skillType(SkillType.INTELLECTUAL)
-                .princeLevel(PrinceLevel.JUNIOR_PRINCE)
-                .princeId("princeId2")
-                .build();
+        PrinceDto warriorKing = new PrinceDto(
+                PrinceLevel.KING,
+                SkillType.WARRIOR,
+                "princeId");
+
+        PrinceDto intellectualJuniorPrince = new PrinceDto(
+                PrinceLevel.JUNIOR_PRINCE,
+                SkillType.INTELLECTUAL,
+                "princeId2");
+        
         given(princeMakerService.getAllPrince())
                 .willReturn(Arrays.asList(warriorKing, intellectualJuniorPrince));
 

@@ -89,7 +89,7 @@ class PrinceMakerService (
 
     @Transactional
     fun editPrince(
-        princeId: String?, request: EditPrince.Request
+        princeId: String, request: EditPrince.Request
     ): PrinceDetailDto {
         val prince = princeRepository.findByPrinceId(princeId)
             .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
