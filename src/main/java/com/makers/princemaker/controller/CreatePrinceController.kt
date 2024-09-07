@@ -1,16 +1,28 @@
-package com.makers.princemaker.dto
+package com.makers.princemaker.controller
 
 import com.makers.princemaker.entity.Prince
+import com.makers.princemaker.service.PrinceMakerService
 import com.makers.princemaker.type.PrinceLevel
 import com.makers.princemaker.type.SkillType
-import lombok.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-/**
- * @author Snow
- */
+@RestController
+class CreatePrinceController(
+    private val princeMakerService: PrinceMakerService
+) {
+    @PostMapping("/create-prince")
+    fun createPrince(
+        @Valid
+        @RequestBody request: CreatePrince.Request
+    ): CreatePrince.Response = princeMakerService.createPrince(request)
+}
+
 class CreatePrince {
     data class Request(
         @field:NotNull
@@ -37,19 +49,15 @@ class CreatePrince {
         val princeId: String? = null,
         val name: String? = null,
         val age: Int? = null
-    ) {
-        companion object {
-            @JvmStatic
-            fun fromEntity(prince: Prince): Response {
-                //코틀린에선 빌더 필요 없음 (기본 생성자의 파라미터 명을 직접 지정할 수 있기 때문에)
-                return Response(
-                    princeLevel = prince.princeLevel,
-                    skillType = prince.skillType,
-                    experienceYears = prince.experienceYears,
-                    princeId = prince.princeId,
-                    name = prince.name,
-                    age = prince.age)
-            }
-        }
-    }
+    )
 }
+
+//확장함수
+fun Prince.toCreatePrinceResponse() = CreatePrince.Response(
+    princeLevel = this.princeLevel,
+    skillType = this.skillType,
+    experienceYears = this.experienceYears,
+    princeId = this.princeId,
+    name = this.name,
+    age = this.age
+)
