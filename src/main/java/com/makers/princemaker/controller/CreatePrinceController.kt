@@ -1,9 +1,9 @@
 package com.makers.princemaker.controller
 
+import com.makers.princemaker.code.PrinceLevel
+import com.makers.princemaker.code.SkillType
 import com.makers.princemaker.entity.Prince
 import com.makers.princemaker.service.PrinceMakerService
-import com.makers.princemaker.type.PrinceLevel
-import com.makers.princemaker.type.SkillType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController

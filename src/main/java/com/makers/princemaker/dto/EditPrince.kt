@@ -1,8 +1,7 @@
 package com.makers.princemaker.dto
 
-import com.makers.princemaker.type.PrinceLevel
-import com.makers.princemaker.type.SkillType
-import lombok.*
+import com.makers.princemaker.code.PrinceLevel
+import com.makers.princemaker.code.SkillType
 
 /**
  * @author Snow

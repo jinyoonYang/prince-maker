@@ -1,7 +1,15 @@
 package com.makers.princemaker.service
 
+import com.makers.princemaker.code.PrinceLevel
+import com.makers.princemaker.code.PrinceLevel.*
 import com.makers.princemaker.code.PrinceMakerErrorCode
+import com.makers.princemaker.code.PrinceMakerErrorCode.DUPLICATED_PRINCE_ID
+import com.makers.princemaker.code.PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH
+import com.makers.princemaker.code.SkillType
+import com.makers.princemaker.code.SkillType.INTELLECTUAL
+import com.makers.princemaker.code.SkillType.WARRIOR
 import com.makers.princemaker.code.StatusCode
+import com.makers.princemaker.code.StatusCode.*
 import com.makers.princemaker.constant.PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS
 import com.makers.princemaker.controller.CreatePrince
 import com.makers.princemaker.dto.dummyCreatePrinceRequest
@@ -10,8 +18,6 @@ import com.makers.princemaker.entity.dummyPrince
 import com.makers.princemaker.exception.PrinceMakerException
 import com.makers.princemaker.repository.PrinceRepository
 import com.makers.princemaker.repository.WoundedPrinceRepository
-import com.makers.princemaker.type.PrinceLevel.*
-import com.makers.princemaker.type.SkillType.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -77,7 +83,7 @@ internal class PrinceMakerServiceTest {
             id = null,
             princeLevel = BABY_PRINCE,
             skillType = WARRIOR,
-            status = StatusCode.HEALTHY,
+            status = HEALTHY,
             experienceYears = 2000,
             princeId = "his",
             name = "Davis Kemp",
@@ -127,7 +133,7 @@ internal class PrinceMakerServiceTest {
         }
 
         //then
-        assertEquals(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID, exception.princeMakerErrorCode)
+        assertEquals(DUPLICATED_PRINCE_ID, exception.princeMakerErrorCode)
     }
 
     @Test
@@ -145,6 +151,6 @@ internal class PrinceMakerServiceTest {
         }
 
         //then
-        assertEquals(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH, exception.getPrinceMakerErrorCode())
+        assertEquals(LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH, exception.getPrinceMakerErrorCode())
     }
 }

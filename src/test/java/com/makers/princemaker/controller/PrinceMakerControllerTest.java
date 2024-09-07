@@ -1,12 +1,12 @@
 package com.makers.princemaker.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.makers.princemaker.code.PrinceLevel;
 import com.makers.princemaker.code.PrinceMakerErrorCode;
+import com.makers.princemaker.code.SkillType;
 import com.makers.princemaker.dto.PrinceDto;
 import com.makers.princemaker.exception.PrinceMakerException;
 import com.makers.princemaker.service.PrinceMakerService;
-import com.makers.princemaker.type.PrinceLevel;
-import com.makers.princemaker.type.SkillType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import static com.makers.princemaker.code.PrinceLevel.*;
+import static com.makers.princemaker.code.SkillType.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -50,13 +52,13 @@ class PrinceMakerControllerTest {
     void getAllPrince() throws Exception {
         //given
         PrinceDto warriorKing = new PrinceDto(
-                PrinceLevel.KING,
-                SkillType.WARRIOR,
+                KING,
+                WARRIOR,
                 "princeId");
 
         PrinceDto intellectualJuniorPrince = new PrinceDto(
-                PrinceLevel.JUNIOR_PRINCE,
-                SkillType.INTELLECTUAL,
+                JUNIOR_PRINCE,
+                INTELLECTUAL,
                 "princeId2");
         
         given(princeMakerService.getAllPrince())
@@ -68,24 +70,24 @@ class PrinceMakerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(
                         jsonPath("$.[0].skillType",
-                                is(SkillType.WARRIOR.name())))
+                                is(WARRIOR.name())))
                 .andExpect(
                         jsonPath("$.[0].princeLevel",
-                                is(PrinceLevel.KING.name())))
+                                is(KING.name())))
                 .andExpect(
                         jsonPath("$.[1].skillType",
-                                is(SkillType.INTELLECTUAL.name())))
+                                is(INTELLECTUAL.name())))
                 .andExpect(
                         jsonPath("$.[1].princeLevel",
-                                is(PrinceLevel.JUNIOR_PRINCE.name())));
+                                is(JUNIOR_PRINCE.name())));
     }
 
     @Test
     void createPrinceSuccess() throws Exception {
         //given
         CreatePrince.Request createPrinceRequest = new CreatePrince.Request(
-                PrinceLevel.BABY_PRINCE,
-                SkillType.INTELLECTUAL,
+                BABY_PRINCE,
+                INTELLECTUAL,
                 20,
                 "princeId",
                 "name",
@@ -94,8 +96,8 @@ class PrinceMakerControllerTest {
         given(princeMakerService.createPrince(any()))
                 .willReturn(
                         new CreatePrince.Response(
-                                PrinceLevel.BABY_PRINCE,
-                                SkillType.INTELLECTUAL,
+                                BABY_PRINCE,
+                                INTELLECTUAL,
                                 20,
                                 "princeId",
                                 "name",
@@ -113,10 +115,10 @@ class PrinceMakerControllerTest {
                 .andDo(print())
                 .andExpect(
                         jsonPath("$.skillType",
-                                is(SkillType.INTELLECTUAL.name())))
+                                is(INTELLECTUAL.name())))
                 .andExpect(
                         jsonPath("$.princeLevel",
-                                is(PrinceLevel.BABY_PRINCE.name())));
+                                is(BABY_PRINCE.name())));
     }
 
     @Test

@@ -1,9 +1,8 @@
 package com.makers.princemaker.entity
 
+import com.makers.princemaker.code.PrinceLevel
+import com.makers.princemaker.code.SkillType
 import com.makers.princemaker.code.StatusCode
-import com.makers.princemaker.type.PrinceLevel
-import com.makers.princemaker.type.SkillType
-import lombok.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener

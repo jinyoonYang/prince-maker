@@ -1,5 +1,6 @@
 package com.makers.princemaker.service
 
+import com.makers.princemaker.code.PrinceLevel
 import com.makers.princemaker.code.PrinceMakerErrorCode
 import com.makers.princemaker.code.StatusCode
 import com.makers.princemaker.constant.PrinceMakerConstant
@@ -14,11 +15,9 @@ import com.makers.princemaker.entity.WoundedPrince
 import com.makers.princemaker.exception.PrinceMakerException
 import com.makers.princemaker.repository.PrinceRepository
 import com.makers.princemaker.repository.WoundedPrinceRepository
-import com.makers.princemaker.type.PrinceLevel
-import lombok.RequiredArgsConstructor
+import com.makers.princemaker.util.shouldNotTrue
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.stream.Collectors
 
 /**
  * @author Snow
@@ -52,35 +51,30 @@ class PrinceMakerService (
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
         //Optional(ifPresent) -> ?.let (값이 있을때만 앞 함수에서 받은 값을 가지고 수행하는 걸 의미함)
         //findByPrinceId 값이 있는 경우에 Exception 발생
-        princeRepository.findByPrinceId(request.princeId)
-            ?.let { throw PrinceMakerException(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID) }
+        (princeRepository.findByPrinceId(request.princeId) != null)
+            .shouldNotTrue(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID)
 
-        if (request.princeLevel == PrinceLevel.KING
+        (request.princeLevel == PrinceLevel.KING
             && request.experienceYears!! < PrinceMakerConstant.MIN_KING_EXPERIENCE_YEARS
-        ) {
-            throw PrinceMakerException(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
-        }
+        ).shouldNotTrue(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
 
-        if (request.princeLevel == PrinceLevel.MIDDLE_PRINCE
+        (request.princeLevel == PrinceLevel.MIDDLE_PRINCE
             && (request.experienceYears!! > PrinceMakerConstant.MIN_KING_EXPERIENCE_YEARS
                     || request.experienceYears < PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS)
-        ) {
-            throw PrinceMakerException(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
-        }
+        ).shouldNotTrue(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
 
-        if (request.princeLevel == PrinceLevel.JUNIOR_PRINCE
+        (request.princeLevel == PrinceLevel.JUNIOR_PRINCE
             && request.experienceYears!! > PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS
-        ) {
-            throw PrinceMakerException(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
-        }
+        ).shouldNotTrue(PrinceMakerErrorCode.LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH)
     }
 
-    @get:Transactional
-    val allPrince: List<PrinceDto>
+    @Transactional
+    fun getAllPrince(): List<PrinceDto> {
         //map은 값이 반드시 있다는 가정하에 도는 로직임으로 파라미터를 nullable 할 필요 없음(? 제거)
         //값이 1개인 경우 it을 this 처럼 쓸 수 있음
-        get() = princeRepository.findByStatusEquals(StatusCode.HEALTHY)
+        return princeRepository.findByStatusEquals(StatusCode.HEALTHY)
             .map { PrinceDto.fromEntity(it) }
+    }
 
     @Transactional
     fun getPrince(princeId: String): PrinceDetailDto {
@@ -105,7 +99,6 @@ class PrinceMakerService (
             this.name = request.name
             this.age = request.age
         }
-
 
         return prince.toPrinceDatailDto()
     }

@@ -16,9 +16,10 @@ import javax.validation.Valid
 class PrinceMakerController (
     val princeMakerService: PrinceMakerService
 ) {
-    @get:GetMapping("/princes")
-    val princes: List<PrinceDto>
-        get() = princeMakerService.allPrince
+    @GetMapping("/princes")
+    fun princes(): List<PrinceDto> {
+        return princeMakerService.getAllPrince()
+    }
 
     @GetMapping("/prince/{princeId}")
     fun getPrince(
