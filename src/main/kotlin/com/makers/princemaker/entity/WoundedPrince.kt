@@ -13,7 +13,7 @@ import javax.persistence.*
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 @Table(name = "wounded_prince")
-class WoundedPrince (
+data class WoundedPrince (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,

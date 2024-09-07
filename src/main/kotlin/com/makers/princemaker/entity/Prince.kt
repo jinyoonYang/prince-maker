@@ -15,7 +15,7 @@ import javax.persistence.*
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 @Table(name = "prince")
-class Prince (
+data class Prince (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
