@@ -3,16 +3,14 @@ package com.makers.princemaker.service
 import com.makers.princemaker.code.PrinceMakerErrorCode
 import com.makers.princemaker.code.StatusCode
 import com.makers.princemaker.constant.PrinceMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS
-import com.makers.princemaker.constant.PrinceMakerConstant.MIN_KING_EXPERIENCE_YEARS
 import com.makers.princemaker.controller.CreatePrince
+import com.makers.princemaker.dto.dummyCreatePrinceRequest
 import com.makers.princemaker.entity.Prince
 import com.makers.princemaker.entity.dummyPrince
 import com.makers.princemaker.exception.PrinceMakerException
 import com.makers.princemaker.repository.PrinceRepository
 import com.makers.princemaker.repository.WoundedPrinceRepository
-import com.makers.princemaker.type.PrinceLevel
 import com.makers.princemaker.type.PrinceLevel.*
-import com.makers.princemaker.type.SkillType
 import com.makers.princemaker.type.SkillType.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -25,7 +23,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.jupiter.api.function.Executable
 import java.util.*
 
 /**
@@ -66,14 +63,10 @@ internal class PrinceMakerServiceTest {
     @Test
     fun createPrinceTest_success() {
         //given
-        val request: CreatePrince.Request = CreatePrince.Request(
-            MIDDLE_PRINCE,
-            INTELLECTUAL,
-            7,
-            "princeId",
-            "name",
-            28
-        )
+        val request: CreatePrince.Request = dummyCreatePrinceRequest().copy(experienceYears = 7,
+            princeLevel = MIDDLE_PRINCE,
+            skillType = INTELLECTUAL)
+
         every{
             princeRepository.save(any())
         } returns Prince(
@@ -118,14 +111,7 @@ internal class PrinceMakerServiceTest {
                 experienceYears = MAX_JUNIOR_EXPERIENCE_YEARS,
                 name = "princeId")
 
-        val request: CreatePrince.Request = CreatePrince.Request(
-            JUNIOR_PRINCE,
-            INTELLECTUAL,
-            3,
-            "princeId",
-            "name",
-            28
-        )
+        val request: CreatePrince.Request = dummyCreatePrinceRequest()
 
         every {
             princeRepository.findByPrinceId(any())
@@ -143,14 +129,8 @@ internal class PrinceMakerServiceTest {
     @Test
     fun createPrinceTest_failed_with_invalid_experience() {
         //given
-        val request: CreatePrince.Request = CreatePrince.Request(
-            KING,
-            INTELLECTUAL,
-            MIN_KING_EXPERIENCE_YEARS - 3,
-            "princeId",
-            "name",
-            28
-        )
+        val request: CreatePrince.Request = dummyCreatePrinceRequest()
+
         every {
             princeRepository.findByPrinceId(any())
         } returns Optional.empty<Prince>()
