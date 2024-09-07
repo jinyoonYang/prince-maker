@@ -17,3 +17,21 @@ enum class StatusCode (
     HEALTHY("건강한"),
     WOUNDED("부상당한")
 }
+
+enum class PrinceLevel (
+    val description: String
+) {
+    BABY_PRINCE("아기 왕자님"),
+    JUNIOR_PRINCE("어린이 왕자님"),
+    MIDDLE_PRINCE("청년 왕자님"),
+    KING("왕"),
+    DRAGON_SLAYER("용을 무찌른 왕")
+}
+
+enum class SkillType(
+    val description: String
+) {
+    WARRIOR("전투형"),
+    INTELLECTUAL("지능형"),
+    MAGE("마술사형")
+}

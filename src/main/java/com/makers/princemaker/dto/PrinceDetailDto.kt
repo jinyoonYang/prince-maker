@@ -10,31 +10,23 @@ import com.makers.princemaker.util.getLocalDateTimeString
  * @author Snow
  */
 data class PrinceDetailDto (
-    val princeLevel: PrinceLevel? = null,
-    val skillType: SkillType? = null,
-    val experienceYears: Int? = null,
-    val princeId: String? = null,
-    val name: String? = null,
-    val age: Int? = null,
-    val status: StatusCode? = null,
-    val birthDate: String? = null
-){
-    companion object {
-        @JvmStatic
-        fun fromEntity(prince: Prince?): PrinceDetailDto {
-            if(null == prince){
-                return PrinceDetailDto()
-            }
+    val princeLevel: PrinceLevel,
+    val skillType: SkillType,
+    val experienceYears: Int,
+    val princeId: String,
+    val name: String,
+    val age: Int,
+    val status: StatusCode,
+    val birthDate: String
+)
 
-            return PrinceDetailDto(
-                princeLevel = prince.princeLevel,
-                skillType = prince.skillType,
-                experienceYears = prince.experienceYears,
-                princeId = prince.princeId,
-                name = prince.name,
-                age = prince.age,
-                status = prince.status,
-                birthDate = getLocalDateTimeString(prince.createdAt))
-        }
-    }
-}
+fun Prince.toPrinceDatailDto() = PrinceDetailDto(
+    princeLevel = this.princeLevel,
+    skillType = this.skillType,
+    experienceYears = this.experienceYears,
+    princeId = this.princeId,
+    name = this.name,
+    age = this.age,
+    status = this.status,
+    birthDate = this.createdAt!!.getLocalDateTimeString()
+)

@@ -8,6 +8,7 @@ import com.makers.princemaker.controller.toCreatePrinceResponse
 import com.makers.princemaker.dto.EditPrince
 import com.makers.princemaker.dto.PrinceDetailDto
 import com.makers.princemaker.dto.PrinceDto
+import com.makers.princemaker.dto.toPrinceDatailDto
 import com.makers.princemaker.entity.Prince
 import com.makers.princemaker.entity.WoundedPrince
 import com.makers.princemaker.exception.PrinceMakerException
@@ -85,7 +86,7 @@ class PrinceMakerService (
     fun getPrince(princeId: String): PrinceDetailDto {
         //. -> 값이 있으면, let 앞 리턴값을 가져다 씀, ?:throw = orElseThrow (optional)
         return princeRepository.findByPrinceId(princeId)
-            ?.let { PrinceDetailDto.fromEntity(it) }
+            ?.let { it.toPrinceDatailDto()}
             ?:throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
     }
 
@@ -106,7 +107,7 @@ class PrinceMakerService (
         }
 
 
-        return PrinceDetailDto.fromEntity(prince)
+        return prince.toPrinceDatailDto()
     }
 
     @Transactional
@@ -129,6 +130,6 @@ class PrinceMakerService (
                 woundedPrinceRepository.save(it)
             }
 
-            return PrinceDetailDto.fromEntity(this)
+            return this.toPrinceDatailDto()
         }
 }
