@@ -151,6 +151,6 @@ internal class PrinceMakerServiceTest {
         }
 
         //then
-        assertEquals(LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH, exception.getPrinceMakerErrorCode())
+        assertEquals(LEVEL_AND_EXPERIENCE_YEARS_NOT_MATCH, exception.princeMakerErrorCode)
     }
 }

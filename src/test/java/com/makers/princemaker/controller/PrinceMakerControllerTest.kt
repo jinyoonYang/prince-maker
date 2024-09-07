@@ -1,162 +1,203 @@
-package com.makers.princemaker.controller;
+package com.makers.princemaker.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.makers.princemaker.code.PrinceLevel;
-import com.makers.princemaker.code.PrinceMakerErrorCode;
-import com.makers.princemaker.code.SkillType;
-import com.makers.princemaker.dto.PrinceDto;
-import com.makers.princemaker.exception.PrinceMakerException;
-import com.makers.princemaker.service.PrinceMakerService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
-import static com.makers.princemaker.code.PrinceLevel.*;
-import static com.makers.princemaker.code.SkillType.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.makers.princemaker.code.PrinceLevel
+import com.makers.princemaker.code.PrinceMakerErrorCode
+import com.makers.princemaker.code.SkillType
+import com.makers.princemaker.dto.PrinceDto
+import com.makers.princemaker.exception.PrinceMakerException
+import com.makers.princemaker.repository.PrinceRepository
+import com.makers.princemaker.repository.WoundedPrinceRepository
+import com.makers.princemaker.service.PrinceMakerService
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
+import org.hamcrest.CoreMatchers
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers
+import org.mockito.BDDMockito
+import org.mockito.Mockito.`when`
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import java.nio.charset.StandardCharsets
+import java.util.*
 
 /**
  * @author Snow
  */
-@WebMvcTest(controllers = {PrinceMakerController.class, CreatePrinceController.class})
-@MockBean(JpaMetamodelMappingContext.class)
-class PrinceMakerControllerTest {
+@WebMvcTest(controllers = [PrinceMakerController::class, CreatePrinceController::class])
+@MockkBean(JpaMetamodelMappingContext::class)
+internal class PrinceMakerControllerTest {
+
     @Autowired
-    private MockMvc mockMvc;
+    lateinit var mockMvc: MockMvc
 
-    @MockBean
-    private PrinceMakerService princeMakerService;
+    @MockkBean
+    lateinit var princeMakerService: PrinceMakerService
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    val objectMapper = ObjectMapper()
 
-    protected MediaType contentType =
-            new MediaType(MediaType.APPLICATION_JSON.getType(),
-                    MediaType.APPLICATION_JSON.getSubtype(),
-                    StandardCharsets.UTF_8);
+    val contentType: MediaType = MediaType(
+        MediaType.APPLICATION_JSON.type,
+        MediaType.APPLICATION_JSON.subtype,
+        StandardCharsets.UTF_8
+    )
 
+    @Throws(Exception::class)
     @Test
-    void getAllPrince() throws Exception {
+    fun allPrince() {
         //given
-        PrinceDto warriorKing = new PrinceDto(
-                KING,
-                WARRIOR,
-                "princeId");
+        val warriorKing = PrinceDto(
+            PrinceLevel.KING,
+            SkillType.WARRIOR,
+            "princeId"
+        )
 
-        PrinceDto intellectualJuniorPrince = new PrinceDto(
-                JUNIOR_PRINCE,
-                INTELLECTUAL,
-                "princeId2");
-        
-        given(princeMakerService.getAllPrince())
-                .willReturn(Arrays.asList(warriorKing, intellectualJuniorPrince));
+        val intellectualJuniorPrince = PrinceDto(
+            PrinceLevel.JUNIOR_PRINCE,
+            SkillType.INTELLECTUAL,
+            "princeId2"
+        )
+
+        //Mockito 버전 (@MockBean)
+//        `when`(princeMakerService.getAllPrince()).thenReturn(Arrays.asList(warriorKing, intellectualJuniorPrince))
+        every{
+            princeMakerService.getAllPrince()
+        } returns Arrays.asList(warriorKing, intellectualJuniorPrince)
 
         //when
         //then
-        mockMvc.perform(get("/princes").contentType(contentType))
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.[0].skillType",
-                                is(WARRIOR.name())))
-                .andExpect(
-                        jsonPath("$.[0].princeLevel",
-                                is(KING.name())))
-                .andExpect(
-                        jsonPath("$.[1].skillType",
-                                is(INTELLECTUAL.name())))
-                .andExpect(
-                        jsonPath("$.[1].princeLevel",
-                                is(JUNIOR_PRINCE.name())));
+        mockMvc.perform(MockMvcRequestBuilders.get("/princes").contentType(contentType))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.[0].skillType",
+                    CoreMatchers.`is`(SkillType.WARRIOR.name)
+                )
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.[0].princeLevel",
+                    CoreMatchers.`is`(PrinceLevel.KING.name)
+                )
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.[1].skillType",
+                    CoreMatchers.`is`(SkillType.INTELLECTUAL.name)
+                )
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.[1].princeLevel",
+                    CoreMatchers.`is`(PrinceLevel.JUNIOR_PRINCE.name)
+                )
+            )
     }
 
     @Test
-    void createPrinceSuccess() throws Exception {
+    @Throws(Exception::class)
+    fun createPrinceSuccess() {
         //given
-        CreatePrince.Request createPrinceRequest = new CreatePrince.Request(
-                BABY_PRINCE,
-                INTELLECTUAL,
+        val createPrinceRequest = CreatePrince.Request(
+            PrinceLevel.BABY_PRINCE,
+            SkillType.INTELLECTUAL,
+            20,
+            "princeId",
+            "name",
+            20
+        )
+        every {  princeMakerService.createPrince(any())
+        } returns CreatePrince.Response(
+                PrinceLevel.BABY_PRINCE,
+                SkillType.INTELLECTUAL,
                 20,
                 "princeId",
                 "name",
                 20
-        );
-        given(princeMakerService.createPrince(any()))
-                .willReturn(
-                        new CreatePrince.Response(
-                                BABY_PRINCE,
-                                INTELLECTUAL,
-                                20,
-                                "princeId",
-                                "name",
-                                20
-                        )
-                );
+            )
 
         //when
         //then
-        mockMvc.perform(post("/create-prince")
-                        .contentType(contentType)
-                        .content(objectMapper.writeValueAsString(createPrinceRequest))
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/create-prince")
+                .contentType(contentType)
+                .content(objectMapper.writeValueAsString(createPrinceRequest))
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.skillType",
+                    CoreMatchers.`is`(SkillType.INTELLECTUAL.name)
                 )
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(
-                        jsonPath("$.skillType",
-                                is(INTELLECTUAL.name())))
-                .andExpect(
-                        jsonPath("$.princeLevel",
-                                is(BABY_PRINCE.name())));
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.princeLevel",
+                    CoreMatchers.`is`(PrinceLevel.BABY_PRINCE.name)
+                )
+            )
     }
 
     @Test
-    void createPrinceFailed() throws Exception {
+    @Throws(Exception::class)
+    fun createPrinceFailed() {
         //given
         //when
         //then
-        mockMvc.perform(post("/create-prince")
-                        .contentType(contentType)
-                        .content(
-                                "{\"princeLevel\":\"BABY_PRINCE\",\"skillType\":\"INTELLECTUAL\",\"princeId\":\"princeId\",\"name\":\"name\",\"age\":20}"
-                        )
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/create-prince")
+                .contentType(contentType)
+                .content(
+                    "{\"princeLevel\":\"BABY_PRINCE\",\"skillType\":\"INTELLECTUAL\",\"princeId\":\"princeId\",\"name\":\"name\",\"age\":20}"
                 )
-                .andExpect(status().isBadRequest())
-                .andDo(print())
-                .andExpect(
-                        jsonPath("$.errorCode",
-                                is(PrinceMakerErrorCode.INVALID_REQUEST.name())))
-                .andExpect(
-                        jsonPath("$.errorMessage",
-                                is(PrinceMakerErrorCode.INVALID_REQUEST.getMessage())));
+        )
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.errorCode",
+                    CoreMatchers.`is`(PrinceMakerErrorCode.INVALID_REQUEST.name)
+                )
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.errorMessage",
+                    CoreMatchers.`is`(PrinceMakerErrorCode.INVALID_REQUEST.message)
+                )
+            )
     }
 
     @Test
-    void testErrorMessage() throws Exception {
+    @Throws(Exception::class)
+    fun testErrorMessage() {
         //given
-        given(princeMakerService.getAllPrince())
-                .willThrow(new PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE));
+       every { princeMakerService.getAllPrince() } throws  PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
 
         //when
         //then
-        mockMvc.perform(get("/princes").contentType(contentType))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(
-                        jsonPath("$.errorCode",
-                                is(PrinceMakerErrorCode.NO_SUCH_PRINCE.name())));
-
+        mockMvc.perform(MockMvcRequestBuilders.get("/princes").contentType(contentType))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.jsonPath(
+                    "$.errorCode",
+                    CoreMatchers.`is`(PrinceMakerErrorCode.NO_SUCH_PRINCE.name)
+                )
+            )
     }
 }
 

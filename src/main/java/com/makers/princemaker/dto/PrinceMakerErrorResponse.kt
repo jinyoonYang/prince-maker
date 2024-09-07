@@ -7,6 +7,6 @@ import lombok.*
  * @author Snow
  */
 data class PrinceMakerErrorResponse (
-    val errorCode: PrinceMakerErrorCode? = null,
-    val errorMessage: String? = null
+    val errorCode: PrinceMakerErrorCode,
+    val errorMessage: String
 )

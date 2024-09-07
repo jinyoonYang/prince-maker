@@ -1,13 +1,11 @@
-package com.makers.princemaker;
+package com.makers.princemaker
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class PrinceMakerApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+internal class PrinceMakerApplicationTests {
+    @Test
+    fun contextLoads() {
+    }
 }

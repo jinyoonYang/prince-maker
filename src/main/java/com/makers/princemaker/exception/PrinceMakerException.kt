@@ -1,26 +1,26 @@
-package com.makers.princemaker.exception;
+package com.makers.princemaker.exception
 
-import com.makers.princemaker.code.PrinceMakerErrorCode;
-import lombok.Getter;
+import com.makers.princemaker.code.PrinceMakerErrorCode
+import lombok.Getter
 
 /**
  * @author Snow
  */
 @Getter
-public class PrinceMakerException extends RuntimeException {
-    private PrinceMakerErrorCode princeMakerErrorCode;
-    private String detailMessage;
+class PrinceMakerException : RuntimeException {
+    var princeMakerErrorCode: PrinceMakerErrorCode
+    var detailMessage: String
 
-    public PrinceMakerException(PrinceMakerErrorCode princeMakerErrorCode) {
-        super(princeMakerErrorCode.getMessage());
-        this.princeMakerErrorCode = princeMakerErrorCode;
-        this.detailMessage = princeMakerErrorCode.getMessage();
+    constructor(princeMakerErrorCode: PrinceMakerErrorCode) : super(princeMakerErrorCode.message) {
+        this.princeMakerErrorCode = princeMakerErrorCode
+        this.detailMessage = princeMakerErrorCode.message
     }
 
-    public PrinceMakerException(PrinceMakerErrorCode princeMakerErrorCode,
-                                String detailMessage) {
-        super(detailMessage);
-        this.princeMakerErrorCode = princeMakerErrorCode;
-        this.detailMessage = detailMessage;
+    constructor(
+        princeMakerErrorCode: PrinceMakerErrorCode,
+        detailMessage: String
+    ) : super(detailMessage) {
+        this.princeMakerErrorCode = princeMakerErrorCode
+        this.detailMessage = detailMessage
     }
 }
