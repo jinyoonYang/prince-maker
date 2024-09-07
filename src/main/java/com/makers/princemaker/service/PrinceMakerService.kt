@@ -50,10 +50,10 @@ class PrinceMakerService (
     }
 
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
+        //Optional(ifPresent) -> ?.let (값이 있을때만 앞 함수에서 받은 값을 가지고 수행하는 걸 의미함)
+        //findByPrinceId 값이 있는 경우에 Exception 발생
         princeRepository.findByPrinceId(request.princeId)
-            .ifPresent { prince: Prince? ->
-                throw PrinceMakerException(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID)
-            }
+            ?.let { throw PrinceMakerException(PrinceMakerErrorCode.DUPLICATED_PRINCE_ID) }
 
         if (request.princeLevel == PrinceLevel.KING
             && request.experienceYears!! < PrinceMakerConstant.MIN_KING_EXPERIENCE_YEARS
@@ -77,15 +77,17 @@ class PrinceMakerService (
 
     @get:Transactional
     val allPrince: List<PrinceDto>
+        //map은 값이 반드시 있다는 가정하에 도는 로직임으로 파라미터를 nullable 할 필요 없음(? 제거)
+        //값이 1개인 경우 it을 this 처럼 쓸 수 있음
         get() = princeRepository.findByStatusEquals(StatusCode.HEALTHY)
-            .stream().map { prince: Prince? -> PrinceDto.fromEntity(prince) }
-            .collect(Collectors.toList())
+            .map { PrinceDto.fromEntity(it) }
 
     @Transactional
-    fun getPrince(princeId: String?): PrinceDetailDto {
+    fun getPrince(princeId: String): PrinceDetailDto {
+        //. -> 값이 있으면, let 앞 리턴값을 가져다 씀, ?:throw = orElseThrow (optional)
         return princeRepository.findByPrinceId(princeId)
-            .map { obj: Prince? -> PrinceDetailDto.fromEntity(obj) }
-            .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
+            ?.let {prince -> PrinceDetailDto.fromEntity(prince) }
+            ?:throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
     }
 
     @Transactional
@@ -93,7 +95,7 @@ class PrinceMakerService (
         princeId: String, request: EditPrince.Request
     ): PrinceDetailDto {
         val prince = princeRepository.findByPrinceId(princeId)
-            .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
+            ?: throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
         prince.princeLevel = request.princeLevel
         prince.skillType = request.skillType
         prince.experienceYears = request.experienceYears
@@ -105,10 +107,10 @@ class PrinceMakerService (
 
     @Transactional
     fun woundPrince(
-        princeId: String?
+        princeId: String
     ): PrinceDetailDto {
         val prince = princeRepository.findByPrinceId(princeId)
-            .orElseThrow { PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE) }
+            ?:throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
 
         prince.status = StatusCode.WOUNDED
 

@@ -34,7 +34,7 @@ class CreatePrince {
         val experienceYears: Int? = null,
         @field:NotNull
         @field:Size(min = 3, max = 50, message = "invalid princeId")
-        val princeId: String? = null,
+        val princeId: String,
         @field:NotNull
         @field:Size(min = 2, max = 50, message = "invalid name")
         val name: String? = null,
