@@ -27,12 +27,13 @@ class PrinceMakerService (
     val princeRepository: PrinceRepository,
     val woundedPrinceRepository: WoundedPrinceRepository)
 {
-
     @Transactional
     fun createPrince(request: CreatePrince.Request): CreatePrince.Response {
         validateCreatePrinceRequest(request)
 
-        val prince = Prince(
+        //Prince 생성한 뒤에 무조건 한번 호출하는 로직이 있는 경우 also를 써서 prince 객체를 만들고 바로 저장하고 그 객체를 princeResonpose 객체로 만들어서 반환한다는 걸 바로 이해할 수 있음
+        //파라미터는 (T)임으로 it을 내부 호출로 써야됨
+        return Prince(
             null,
             request.princeLevel!!,
             request.skillType!!,
@@ -43,10 +44,8 @@ class PrinceMakerService (
             request.age!!,
             null,
             null
-        )
-
-        princeRepository.save(prince)
-        return prince.toCreatePrinceResponse()
+        ).also { princeRepository.save(it)
+        }.toCreatePrinceResponse()
     }
 
     private fun validateCreatePrinceRequest(request: CreatePrince.Request) {
@@ -86,7 +85,7 @@ class PrinceMakerService (
     fun getPrince(princeId: String): PrinceDetailDto {
         //. -> 값이 있으면, let 앞 리턴값을 가져다 씀, ?:throw = orElseThrow (optional)
         return princeRepository.findByPrinceId(princeId)
-            ?.let {prince -> PrinceDetailDto.fromEntity(prince) }
+            ?.let { PrinceDetailDto.fromEntity(it) }
             ?:throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
     }
 
@@ -96,11 +95,16 @@ class PrinceMakerService (
     ): PrinceDetailDto {
         val prince = princeRepository.findByPrinceId(princeId)
             ?: throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
-        prince.princeLevel = request.princeLevel
-        prince.skillType = request.skillType
-        prince.experienceYears = request.experienceYears
-        prince.name = request.name
-        prince.age = request.age
+
+        //apply 여러개는 set할때 묶음으로 해당 변수의 set을 응집도 있고 묶어주는 역할을 함(함수 파라미터가 T.()임으로 내부에서 this를 써야 됨)
+        prince.apply {
+            this.princeLevel = request.princeLevel
+            this.skillType = request.skillType
+            this.experienceYears = request.experienceYears
+            this.name = request.name
+            this.age = request.age
+        }
+
 
         return PrinceDetailDto.fromEntity(prince)
     }
@@ -108,20 +112,23 @@ class PrinceMakerService (
     @Transactional
     fun woundPrince(
         princeId: String
-    ): PrinceDetailDto {
-        val prince = princeRepository.findByPrinceId(princeId)
-            ?:throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)
+    ): PrinceDetailDto =
+        //with은 잘 안쓰지만 굳이 쓰자면 이렇게 findByPrinceId 로 반환되는 prince를 this로 쓰면서 해당 로직이 한 묶음으로 블락을 잡아 줄 수 있음
+        with(princeRepository.findByPrinceId(princeId)
+            ?: throw PrinceMakerException(PrinceMakerErrorCode.NO_SUCH_PRINCE)) {
 
-        prince.status = StatusCode.WOUNDED
+            this.status = StatusCode.WOUNDED
 
-        val woundedPrince = WoundedPrince(
-            prince.id,
-            prince.princeId,
-            prince.name,
-            null,
-            null
-        )
-        woundedPrinceRepository.save(woundedPrince)
-        return PrinceDetailDto.fromEntity(prince)
-    }
+            WoundedPrince(
+                this.id,
+                this.princeId,
+                this.name,
+                null,
+                null
+            ).also {
+                woundedPrinceRepository.save(it)
+            }
+
+            return PrinceDetailDto.fromEntity(this)
+        }
 }
